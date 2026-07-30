@@ -1,0 +1,13 @@
+{
+    "name": "grllab/rifas-jorge-tadeo",
+    "description": "Sistema de Rifas Jorge Tadeo",
+    "type": "project",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Jorge Arturo Flores Garcia"
+        }
+    ],
+    "minimum-stability": "stable",
+    "require": {}
+}
