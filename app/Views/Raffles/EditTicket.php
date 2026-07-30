@@ -1,94 +1,68 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-<meta charset="UTF-8">
-<title>Editar boleto</title>
-
-<style>
-
-body{
-    font-family:Arial;
-    padding:40px;
-    max-width:600px;
-    margin:auto;
-}
-
-input,
-select{
-
-    width:100%;
-    padding:10px;
-    margin-top:5px;
-    margin-bottom:20px;
-}
-
-button{
-
-    background:#28a745;
-    color:white;
-    border:none;
-    padding:12px 20px;
-    border-radius:8px;
-    cursor:pointer;
-}
-
-</style>
-
-</head>
-
-<body>
-
-<h1>Boleto #<?= str_pad($ticket->ticket_number,3,'0',STR_PAD_LEFT) ?></h1>
+<h2 class="mb-4">
+    🎟️ Editar boleto #<?= str_pad($ticket->ticket_number, 3, '0', STR_PAD_LEFT) ?>
+</h2>
 
 <form method="POST" action="/tickets/update">
 
-<input type="hidden" name="id" value="<?= $ticket->id ?>">
+    <input type="hidden" name="id" value="<?= $ticket->id ?>">
 
-<label>Nombre</label>
+    <div class="mb-3">
+        <label class="form-label">Nombre</label>
+        <input
+            type="text"
+            name="customer_name"
+            class="form-control"
+            value="<?= htmlspecialchars($ticket->customer_name ?? '') ?>">
+    </div>
 
-<input
-type="text"
-name="customer_name"
-value="<?= htmlspecialchars($ticket->customer_name ?? '') ?>"
->
+    <div class="mb-3">
+        <label class="form-label">Teléfono</label>
+        <input
+            type="text"
+            name="phone"
+            class="form-control"
+            value="<?= htmlspecialchars($ticket->phone ?? '') ?>">
+    </div>
 
-<label>Teléfono</label>
+    <div class="mb-3">
+        <label class="form-label">Referencia de pago</label>
+        <input
+            type="text"
+            name="payment_reference"
+            class="form-control"
+            value="<?= htmlspecialchars($ticket->payment_reference ?? '') ?>">
+    </div>
 
-<input
-type="text"
-name="phone"
-value="<?= htmlspecialchars($ticket->phone ?? '') ?>"
->
+    <div class="mb-4">
+        <label class="form-label">Estado</label>
 
-<label>Referencia de pago</label>
+        <select name="payment_status" class="form-select">
 
-<input
-type="text"
-name="payment_reference"
-value="<?= htmlspecialchars($ticket->payment_reference ?? '') ?>"
->
+            <option value="available" <?= $ticket->payment_status == 'available' ? 'selected' : '' ?>>
+                Disponible
+            </option>
 
-<label>Estado</label>
+            <option value="reserved" <?= $ticket->payment_status == 'reserved' ? 'selected' : '' ?>>
+                Reservado
+            </option>
 
-<select name="payment_status">
+            <option value="paid" <?= $ticket->payment_status == 'paid' ? 'selected' : '' ?>>
+                Pagado
+            </option>
 
-<option value="available">Disponible</option>
+            <option value="winner" <?= $ticket->payment_status == 'winner' ? 'selected' : '' ?>>
+                Ganador
+            </option>
 
-<option value="reserved">Reservado</option>
+        </select>
+    </div>
 
-<option value="paid">Pagado</option>
+    <button type="submit" class="btn btn-success">
+        <i class="bi bi-check-circle"></i> Guardar cambios
+    </button>
 
-<option value="winner">Ganador</option>
-
-</select>
-
-<button>
-
-Guardar
-
-</button>
+    <a href="/raffles/show?id=<?= $ticket->raffle_id ?>" class="btn btn-secondary">
+        Cancelar
+    </a>
 
 </form>
-
-</body>
-</html>
