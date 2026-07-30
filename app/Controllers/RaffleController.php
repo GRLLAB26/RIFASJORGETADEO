@@ -24,15 +24,15 @@ class RaffleController
    public function store()
 {
     $raffleId = Raffle::create([
-        'title'         => $_POST['title'],
-        'description'   => $_POST['description'],
-        'ticket_price'  => $_POST['ticket_price'],
-        'total_numbers' => $_POST['total_numbers'],
-        'draw_date'     => $_POST['draw_date'],
-        'whatsapp'      => $_POST['whatsapp'],
-        'clabe'         => $_POST['clabe'],
-        'status'        => 'active'
-    ]);
+    'title'         => $_POST['title'],
+    'description'   => $_POST['description'],
+    'ticket_price'  => $_POST['ticket_price'],
+    'total_numbers' => $_POST['total_numbers'],
+    'draw_date'     => $_POST['draw_date'],
+    'whatsapp'      => $_POST['whatsapp'],
+    'clabe'         => $_POST['clabe'],
+    'status'        => 'active'
+]);
 
     for ($i = 0; $i < (int) $_POST['total_numbers']; $i++) {
 
@@ -46,8 +46,8 @@ class RaffleController
         ]);
 
     }
+    header('Location: /dashboard');
 
-    header('Location: /raffles');
     exit;
    }
    public function show()

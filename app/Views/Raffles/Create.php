@@ -11,6 +11,22 @@
     <label>Precio por boleto</label><br>
     <input type="number" step="0.01" name="ticket_price" required><br><br>
 
+   <h2>Nueva Rifa</h2>
+
+<form method="POST" action="/raffles/store">
+
+    <label>Título</label><br>
+    <input type="text" name="title" required><br><br>
+
+    <label>Descripción</label><br>
+    <textarea name="description"></textarea><br><br>
+
+    <label>Premio</label><br>
+    <input type="text" name="prize" required><br><br>
+
+    <label>Precio por boleto</label><br>
+    <input type="number" step="0.01" name="ticket_price" required><br><br>
+
     <label>Cantidad de números</label><br>
     <input type="number" name="total_numbers" value="100"><br><br>
 

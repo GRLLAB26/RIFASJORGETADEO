@@ -11,19 +11,19 @@ class Router
         $this->routes = require __DIR__ . '/../../routes/web.php';
     }
 
-    public function dispatch(string $uri)
+    public function dispatch(string $uri, string $method): void
     {
-        $path = parse_url($uri, PHP_URL_PATH);
-        $method = $_SERVER['REQUEST_METHOD'];
+        $uri = parse_url($uri, PHP_URL_PATH);
 
-        if (!isset($this->routes[$method][$path])) {
+        if (!isset($this->routes[$method][$uri])) {
             http_response_code(404);
             exit('404 - Página no encontrada');
         }
 
-        [$controller, $action] = $this->routes[$method][$path];
+        [$controller, $action] = $this->routes[$method][$uri];
 
-        $instance = new $controller();
-        $instance->$action();
+        $controller = new $controller();
+
+        $controller->$action();
     }
 }
