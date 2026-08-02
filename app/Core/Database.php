@@ -13,18 +13,18 @@ class Database
     {
         if (self::$connection === null) {
 
-          $host = "127.0.0.1";
-$database = "rifas_jorge_tadeo";
-$username = "root";
-$password = "GrlUnlock2026!";
+            $host = "127.0.0.1";
+            $database = "rifas_jorge_tadeo";
+            $username = "grl_user";
+            $password = "GrlUnlock2026!";
 
             try {
 
-              self::$connection = new PDO(
-    "mysql:host=127.0.0.1;port=3306;dbname=$database;charset=utf8mb4",
-    $username,
-    $password
-);
+                self::$connection = new PDO(
+                    "mysql:host=$host;port=3306;dbname=$database;charset=utf8mb4",
+                    $username,
+                    $password
+                );
 
                 self::$connection->setAttribute(
                     PDO::ATTR_ERRMODE,
