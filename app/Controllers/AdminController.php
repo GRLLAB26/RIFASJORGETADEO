@@ -7,6 +7,13 @@ use PDO;
 
 class AdminController
 {
+
+    public function index()
+    {
+        view('Admin/Index');
+    }
+
+
     public function customers()
     {
         $db = Database::connect();
@@ -19,8 +26,8 @@ class AdminController
 
         $users = $stmt->fetchAll(PDO::FETCH_OBJ);
 
-view('Admin/Customers', [
-    'users' => $users
-]);
+        view('Admin/Customers', [
+            'users' => $users
+        ]);
     }
 }

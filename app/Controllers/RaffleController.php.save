@@ -127,51 +127,9 @@ public function participate()
     view('Raffles/Participate', [
         'raffle' => $raffle,
         'tickets' => $tickets
-    ]);
+]);
 
 }
 
-public function reserve()
-{
-    $tickets = $_POST['tickets'] ?? [];
-
-    $customer = $_POST['customer_name'] ?? '';
-    $phone = $_POST['phone'] ?? '';
-
-    if (empty($tickets)) {
-        exit('No seleccionaste boletos.');
-    }
-
-    foreach ($tickets as $ticketId) {
-
-        RaffleTicket::updateTicket($ticketId, [
-            'customer_name'      => $customer,
-            'phone'              => $phone,
-            'payment_reference'  => null,
-            'payment_status'     => 'reserved',
-        ]);
-
-    }
-
-    $reservedTickets = [];
-
-    foreach ($tickets as $ticketId) {
-
-        $ticket = RaffleTicket::findTicket($ticketId);
-
-        if ($ticket) {
-            $reservedTickets[] = $ticket;
-        }
-
-    }
-
-    view('Raffles/ReservationSuccess', [
-        'customer' => $customer,
-        'phone' => $phone,
-        'tickets' => $reservedTickets
-    ]);
 
 }
-
-}
-

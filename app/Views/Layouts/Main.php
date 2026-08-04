@@ -42,15 +42,15 @@
 
                 <a href="/raffles" class="list-group-item list-group-item-action">
                     <i class="bi bi-ticket-perforated"></i> Rifas
-                </a>
+   </a>
+<a href="/raffles" class="list-group-item list-group-item-action">
+    <i class="bi bi-grid-3x3-gap"></i> Boletos
 
-                <a href="/tickets" class="list-group-item list-group-item-action">
-                    <i class="bi bi-grid-3x3-gap"></i> Boletos
-                </a>
+</a>
 
-                <a href="/customers" class="list-group-item list-group-item-action">
-                    <i class="bi bi-people"></i> Clientes
-                </a>
+<a href="/admin/customers" class="list-group-item list-group-item-action">
+    <i class="bi bi-people"></i> Clientes
+</a>
 
                 <a href="/payments" class="list-group-item list-group-item-action">
                     <i class="bi bi-cash-stack"></i> Pagos

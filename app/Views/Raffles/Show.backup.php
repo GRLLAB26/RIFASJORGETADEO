@@ -1,4 +1,4 @@
-<?php
+O<?php
 
 $available = 0;
 $reserved  = 0;
@@ -112,15 +112,9 @@ body{
 
 <body>
 
-<?php if (!empty($raffle->image)): ?>
-
-    <img src="/uploads/<?= htmlspecialchars($raffle->image) ?>" 
-     style="max-width:350px;border-radius:10px;">
-<?php endif; ?>
 <h1><?= htmlspecialchars($raffle->title) ?></h1>
 
 <p>
-
 Precio:
 <strong>$<?= number_format($raffle->ticket_price,2) ?></strong>
 </p>

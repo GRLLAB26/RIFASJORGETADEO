@@ -74,14 +74,15 @@ class RaffleTicket extends Model
 
         return $stmt->fetchAll(PDO::FETCH_OBJ);
     }
-public static function stats(): array
-{
-    $stmt = self::db()->query("
+    public static function stats(int $raffleId): array
+
+    {
+        $stmt = self::db()->prepare("
         SELECT 
             payment_status,
             COUNT(*) as total
         FROM raffle_tickets
-        WHERE raffle_id = 2
+        WHERE raffle_id = ?
         GROUP BY payment_status
     ");
 
