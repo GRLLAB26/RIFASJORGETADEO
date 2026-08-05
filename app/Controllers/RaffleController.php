@@ -165,13 +165,15 @@ public function reserve()
 
     }
 
+    $raffle = Raffle::find($reservedTickets[0]->raffle_id);
+
     view('Raffles/ReservationSuccess', [
         'customer' => $customer,
         'phone' => $phone,
-        'tickets' => $reservedTickets
+        'tickets' => $reservedTickets,
+        'raffle' => $raffle
     ]);
 
 }
 
 }
-

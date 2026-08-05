@@ -89,7 +89,12 @@ button:hover{
 
 
 <body>
+<?php if (!empty($raffle->logo)): ?>
 
+<img src="/uploads/<?= htmlspecialchars($raffle->logo) ?>"
+style="max-width:180px;border-radius:10px;margin-bottom:20px;">
+
+<?php endif; ?>
 
 <h1>🎟️ <?= $raffle->title ?></h1>
 
@@ -147,16 +152,21 @@ value="<?= $ticket->id ?>">
 
 </label>
 
-
 <?php else: ?>
-
 
 <div class="ticket used">
 
 <?= str_pad($ticket->ticket_number,3,'0',STR_PAD_LEFT) ?>
 
-</div>
+<?php if($ticket->payment_status == 'reserved'): ?>
+<br>🟡
+<?php elseif($ticket->payment_status == 'paid'): ?>
+<br>🔵
+<?php elseif($ticket->payment_status == 'winner'): ?>
+<br>🏆
+<?php endif; ?>
 
+</div>
 
 <?php endif; ?>
 

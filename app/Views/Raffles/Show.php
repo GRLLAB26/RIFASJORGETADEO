@@ -109,80 +109,25 @@ body{
 </style>
 
 </head>
+<?php if (!empty($raffle->logo)): ?>
 
-<body>
+    <img src="/uploads/<?= htmlspecialchars($raffle->logo) ?>"
+     style="max-width:180px;border-radius:10px;margin-bottom:20px;">
+
+<?php endif; ?>
+
 
 <?php if (!empty($raffle->image)): ?>
 
     <img src="/uploads/<?= htmlspecialchars($raffle->image) ?>" 
      style="max-width:350px;border-radius:10px;">
+
 <?php endif; ?>
+
+
 <h1><?= htmlspecialchars($raffle->title) ?></h1>
 
 <p>
-
 Precio:
 <strong>$<?= number_format($raffle->ticket_price,2) ?></strong>
 </p>
-
-<p>
-Total de boletos:
-<strong><?= count($tickets) ?></strong>
-</p>
-
-<div class="dashboard">
-
-    <div class="card">
-        <h3>🟢 Disponibles</h3>
-        <p><?= $available ?></p>
-    </div>
-
-    <div class="card">
-        <h3>🟡 Reservados</h3>
-        <p><?= $reserved ?></p>
-    </div>
-
-    <div class="card">
-        <h3>🔵 Pagados</h3>
-        <p><?= $paid ?></p>
-    </div>
-
-    <div class="card">
-        <h3>🏆 Ganadores</h3>
-        <p><?= $winner ?></p>
-    </div>
-
-    <div class="card">
-        <h3>💰 Recaudado</h3>
-        <p>$<?= number_format($revenue,2) ?></p>
-    </div>
-
-</div>
-
-<div class="legend">
-    <span><span class="dot" style="background:#28a745"></span>Disponible</span>
-    <span><span class="dot" style="background:#ffc107"></span>Reservado</span>
-    <span><span class="dot" style="background:#007bff"></span>Pagado</span>
-    <span><span class="dot" style="background:#dc3545"></span>Ganador</span>
-</div>
-
-<div class="grid">
-
-<?php foreach($tickets as $ticket): ?>
-
-<a href="/tickets/edit?id=<?= $ticket->id ?>" style="text-decoration:none;">
-
-    <div class="ticket <?= $ticket->payment_status ?>">
-
-        <?= str_pad($ticket->ticket_number,3,'0',STR_PAD_LEFT) ?>
-
-    </div>
-
-</a>
-
-<?php endforeach; ?>
-
-</div>
-
-</body>
-</html>
