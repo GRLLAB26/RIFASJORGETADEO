@@ -154,6 +154,32 @@ public static function reservedCount(): int
     return (int)$stmt->fetchColumn();
 }
 
+public static function reserveIfAvailable(
+    int $id,
+    string $customer,
+    string $phone
+): bool
+{
+    $stmt = self::db()->prepare("
+        UPDATE raffle_tickets
+        SET
+            customer_name = ?,
+            phone = ?,
+            payment_status = 'reserved',
+            reserved_at = NOW()
+        WHERE id = ?
+        AND payment_status = 'available'
+    ");
+
+    $stmt->execute([
+        $customer,
+        $phone,
+        $id
+    ]);
+
+    return $stmt->rowCount() === 1;
+}
+
 
 }
 

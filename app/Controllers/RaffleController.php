@@ -143,17 +143,20 @@ public function reserve()
         exit('No seleccionaste boletos.');
     }
 
-    foreach ($tickets as $ticketId) {
+foreach ($tickets as $ticketId) {
 
-        RaffleTicket::updateTicket($ticketId, [
-            'customer_name'      => $customer,
-            'phone'              => $phone,
-            'payment_reference'  => null,
-            'payment_status'     => 'reserved',
-            'reserved_at'        => date('Y-m-d H:i:s'),
-        ]);
+    $success = RaffleTicket::reserveIfAvailable(
+        (int)$ticketId,
+        $customer,
+        $phone
+    );
 
+    if (!$success) {
+        exit('Uno de los boletos ya no está disponible.');
     }
+
+}
+
 
     $reservedTickets = [];
 
