@@ -1,0 +1,33 @@
+name: Deploy Rifas Jorge Tadeo
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Deploy to Google Compute Engine
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.GCE_HOST }}
+          username: ${{ secrets.GCE_USERNAME }}
+          key: ${{ secrets.GCE_SSH_KEY }}
+          port: ${{ secrets.GCE_PORT }}
+
+          script: |
+            cd /var/www/rifas
+
+            echo "Actualizando código..."
+            git pull origin main
+
+            echo "Permisos..."
+            sudo chown -R flogar2003:www-data /var/www/rifas
+
+            echo "Reiniciando servicios..."
+            sudo systemctl reload nginx
+
+            echo "Deploy completado 🚀"
