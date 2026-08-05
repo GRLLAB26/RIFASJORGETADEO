@@ -16,4 +16,27 @@ class RafflePayment extends Model
         'proof_image',
         'status'
     ];
+public static function approvedTotal(): float
+{
+    $stmt = self::db()->query("
+        SELECT COALESCE(SUM(amount),0)
+        FROM raffle_payments
+        WHERE status = 'approved'
+    ");
+
+    return (float)$stmt->fetchColumn();
+}
+
+
+public static function pendingCount(): int
+{
+    $stmt = self::db()->query("
+        SELECT COUNT(*)
+        FROM raffle_payments
+        WHERE status = 'pending'
+    ");
+
+    return (int)$stmt->fetchColumn();
+}
+
 }

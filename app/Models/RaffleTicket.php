@@ -131,5 +131,29 @@ public static function expireReservations(int $hours = 24): int
     return $stmt->rowCount();
 }
 
+public static function soldCount(): int
+{
+    $stmt = self::db()->query("
+        SELECT COUNT(*)
+        FROM raffle_tickets
+        WHERE payment_status IN ('paid','winner')
+    ");
+
+    return (int)$stmt->fetchColumn();
+}
+
+
+public static function reservedCount(): int
+{
+    $stmt = self::db()->query("
+        SELECT COUNT(*)
+        FROM raffle_tickets
+        WHERE payment_status = 'reserved'
+    ");
+
+    return (int)$stmt->fetchColumn();
+}
+
+
 }
 

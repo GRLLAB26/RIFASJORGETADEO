@@ -8,11 +8,42 @@ use PDO;
 class AdminController
 {
 
-    public function index()
-    {
-        view('Admin/Index');
-    }
+public function index()
+{
+    $db = Database::connect();
 
+    $kpis = [
+
+        'active_raffles' => (int)$db->query("
+            SELECT COUNT(*)
+            FROM raffles
+            WHERE status = 'active'
+        ")->fetchColumn(),
+
+        'sold_tickets' => (int)$db->query("
+            SELECT COUNT(*)
+            FROM raffle_tickets
+            WHERE payment_status IN ('paid','winner')
+        ")->fetchColumn(),
+
+        'reserved_tickets' => (int)$db->query("
+            SELECT COUNT(*)
+            FROM raffle_tickets
+            WHERE payment_status = 'reserved'
+        ")->fetchColumn(),
+
+        'revenue' => (float)$db->query("
+            SELECT COALESCE(SUM(amount),0)
+            FROM raffle_payments
+            WHERE status = 'approved'
+        ")->fetchColumn(),
+
+    ];
+
+    view('Admin/Index', [
+        'kpis' => $kpis
+    ]);
+}
 
     public function customers()
     {
