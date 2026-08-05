@@ -42,25 +42,28 @@ class RaffleTicket extends Model
         return $stmt->fetch(PDO::FETCH_OBJ);
     }
 
-    public static function updateTicket(int $id, array $data)
-    {
-        $stmt = self::db()->prepare("
-            UPDATE raffle_tickets
-            SET
-                customer_name = ?,
-                phone = ?,
-                payment_reference = ?,
-                payment_status = ?
-            WHERE id = ?
-        ");
+public static function updateTicket(int $id, array $data)
+{
+    $stmt = self::db()->prepare("
+        UPDATE raffle_tickets
+        SET
+            customer_name = ?,
+            phone = ?,
+            payment_reference = ?,
+            payment_status = ?,
+            reserved_at = ?
+        WHERE id = ?
+    ");
 
-        return $stmt->execute([
-            $data['customer_name'],
-            $data['phone'],
-            $data['payment_reference'],
-            $data['payment_status'],
-            $id
-        ]);
+    return $stmt->execute([
+        $data['customer_name'],
+        $data['phone'],
+        $data['payment_reference'],
+        $data['payment_status'],
+        $data['reserved_at'],
+        $id
+    ]);
+
     }
 
     public static function reserved(): array
@@ -107,6 +110,25 @@ public static function stats(): array
     }
 
     return $stats;
+}
+
+public static function expireReservations(int $hours = 24): int
+{
+    $stmt = self::db()->prepare("
+        UPDATE raffle_tickets
+        SET
+            payment_status = 'available',
+            customer_name = NULL,
+            phone = NULL,
+            payment_reference = NULL,
+            reserved_at = NULL
+        WHERE payment_status = 'reserved'
+        AND reserved_at <= DATE_SUB(NOW(), INTERVAL ? HOUR)
+    ");
+
+    $stmt->execute([$hours]);
+
+    return $stmt->rowCount();
 }
 
 }

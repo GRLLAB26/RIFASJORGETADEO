@@ -98,12 +98,13 @@ public function updateTicket()
         exit('Boleto no válido.');
     }
 
-    RaffleTicket::updateTicket($id, [
-        'customer_name'      => $_POST['customer_name'] ?? '',
-        'phone'              => $_POST['phone'] ?? '',
-        'payment_reference'  => $_POST['payment_reference'] ?? '',
-        'payment_status'     => $_POST['payment_status'] ?? 'available',
-    ]);
+RaffleTicket::updateTicket($id, [
+    'customer_name'      => $_POST['customer_name'] ?? '',
+    'phone'              => $_POST['phone'] ?? '',
+    'payment_reference'  => $_POST['payment_reference'] ?? '',
+    'payment_status'     => $_POST['payment_status'] ?? 'available',
+    'reserved_at'        => date('Y-m-d H:i:s')
+]);
 
     header('Location: /raffles/show?id=' . $ticket->raffle_id);
     exit;
@@ -149,6 +150,7 @@ public function reserve()
             'phone'              => $phone,
             'payment_reference'  => null,
             'payment_status'     => 'reserved',
+            'reserved_at'        => date('Y-m-d H:i:s'),
         ]);
 
     }
