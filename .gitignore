@@ -1,3 +1,7 @@
 *.sql
 .DS_Store
 nano
+
+
+*.backup
+*.backup2
