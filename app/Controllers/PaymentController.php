@@ -47,37 +47,52 @@ public function approve()
 {
     $id = (int)($_POST['id'] ?? 0);
 
+    if ($id <= 0) {
+        exit('Pago no válido.');
+    }
+
     $db = Database::connect();
 
-    // Aprobar pago
-    $stmt = $db->prepare("
-        UPDATE raffle_payments
-        SET status = 'approved'
-        WHERE id = ?
-    ");
+    try {
 
-    $stmt->execute([$id]);
+        $db->beginTransaction();
+
+        // Buscar pago
+        $stmt = $db->prepare("
+            SELECT raffle_ticket_id, reference, status
+            FROM raffle_payments
+            WHERE id = ?
+            LIMIT 1
+        ");
+
+        $stmt->execute([$id]);
+
+        $payment = $stmt->fetch(PDO::FETCH_OBJ);
+
+        if (!$payment) {
+            throw new \Exception('Pago no encontrado.');
+        }
+
+        if ($payment->status !== 'pending') {
+            throw new \Exception('El pago ya fue procesado.');
+        }
 
 
-    // Buscar boleto relacionado
-    $stmt = $db->prepare("
-        SELECT raffle_ticket_id, reference
-        FROM raffle_payments
-        WHERE id = ?
-    ");
+        // 1. Aprobar pago
+        $stmt = $db->prepare("
+            UPDATE raffle_payments
+            SET status = 'approved'
+            WHERE id = ?
+        ");
 
-    $stmt->execute([$id]);
-
-    $payment = $stmt->fetch(PDO::FETCH_OBJ);
+        $stmt->execute([$id]);
 
 
-    if ($payment) {
-
-        // Marcar boleto como pagado
+        // 2. Marcar boleto como pagado
         $stmt = $db->prepare("
             UPDATE raffle_tickets
             SET
-            payment_status = 'paid',
+                payment_status = 'paid',
                 payment_reference = ?,
                 paid_at = NOW()
             WHERE id = ?
@@ -88,6 +103,16 @@ public function approve()
             $payment->raffle_ticket_id
         ]);
 
+
+        $db->commit();
+
+    } catch (\Exception $e) {
+
+        if ($db->inTransaction()) {
+            $db->rollBack();
+        }
+
+        exit($e->getMessage());
     }
 
 
