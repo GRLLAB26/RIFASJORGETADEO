@@ -1,9 +1,9 @@
 *.sql
 .DS_Store
-nano
-
 
 *.backup
 *.backup2
 *.before_reservas
 *.before_transaction
+
+.vscode/settings.json
