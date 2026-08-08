@@ -167,9 +167,10 @@ class PaymentController
             $stmt = $db->prepare("
                 UPDATE raffle_tickets
                 SET
-                    payment_status = 'pending',
+                    payment_status = 'available',
                     payment_reference = NULL,
-                    paid_at = NULL
+                    paid_at = NULL,
+                    reserved_at = NULL
                 WHERE id = ?
             ");
 
