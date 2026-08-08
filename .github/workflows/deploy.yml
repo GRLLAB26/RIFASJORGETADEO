@@ -1,1 +1,33 @@
-name: Deploy Rifas Jorge Tadeo\n\non:\n  push:\n    branches:\n      - main\n\njobs:\n  deploy:\n    runs-on: ubuntu-latest\n\n    steps:\n      - name: Deploy to Google Compute Engine\n        uses: appleboy/ssh-action@v1.0.3\n        with:\n          host: ${{ secrets.GCE_HOST }}\n          username: ${{ secrets.GCE_USERNAME }}\n          key: ${{ secrets.GCE_SSH_KEY }}\n          port: ${{ secrets.GCE_PORT }}\n\n          script: |\n            cd /var/www/rifas\n\n            echo "Actualizando codigo..."\n            git pull origin main\n\n            echo "Permisos..."\n            sudo chown -R flogar2003:www-data /var/www/rifas\n\n            echo "Reiniciando servicios..."\n            sudo systemctl reload nginx\n\n            echo "Deploy completado"\n
+name: Deploy Rifas Jorge Tadeo
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Deploy to Google Compute Engine
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.GCE_HOST }}
+          username: ${{ secrets.GCE_USERNAME }}
+          key: ${{ secrets.GCE_SSH_KEY }}
+          port: ${{ secrets.GCE_PORT }}
+
+          script: |
+            cd /var/www/rifas
+
+            echo "Actualizando codigo..."
+            git pull origin main
+
+            echo "Permisos..."
+            sudo chown -R flogar2003:www-data /var/www/rifas
+
+            echo "Reiniciando servicios..."
+            sudo systemctl reload nginx
+
+            echo "Deploy completado"
