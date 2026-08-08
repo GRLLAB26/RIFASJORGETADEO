@@ -98,14 +98,16 @@ public function approve()
             WHERE id = ?
         ");
 
-        $stmt->execute([
-            $payment->reference,
-            $payment->raffle_ticket_id
-        ]);
+$stmt->execute([
+    $payment->reference,
+    $payment->raffle_ticket_id
+]);
 
+if ($stmt->rowCount() !== 1) {
+    throw new \Exception('No se pudo marcar el boleto como pagado.');
+}
 
-        $db->commit();
-
+$db->commit();
     } catch (\Exception $e) {
 
         if ($db->inTransaction()) {
