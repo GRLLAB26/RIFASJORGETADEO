@@ -21,7 +21,7 @@ jobs:
           script: |
             cd /var/www/rifas
 
-            echo "Actualizando código..."
+            echo "Actualizando codigo..."
             git pull origin main
 
             echo "Permisos..."
@@ -30,4 +30,4 @@ jobs:
             echo "Reiniciando servicios..."
             sudo systemctl reload nginx
 
-            echo "Deploy completado 🚀"
+            echo "Deploy completado"
