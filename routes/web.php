@@ -23,6 +23,7 @@ return [
     '/reservations/confirm' => [ReservationController::class, 'confirm'],
     '/reservations/release' => [ReservationController::class, 'release'],
 
+    '/payments' => [PaymentController::class, 'index'],
 
     '/login'          => [AuthController::class, 'login'],
     '/logout'         => [AuthController::class, 'logout'],

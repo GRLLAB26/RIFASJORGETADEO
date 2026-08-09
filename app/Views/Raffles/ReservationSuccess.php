@@ -1,159 +1,161 @@
+cat > app/Views/Raffles/ReservationSuccess.php <<'PHP'
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8">
-<title>Reserva confirmada</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
 
-<style>
-body{
-    font-family:Arial;
-    background:#f5f5f5;
-    padding:40px;
-}
+    <title>Reserva Confirmada</title>
 
-.ticket-box{
-    background:white;
-    max-width:500px;
-    margin:auto;
-    padding:25px;
-    border-radius:15px;
-    text-align:center;
-    box-shadow:0 0 10px #ccc;
-}
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f5f5f5;
+            padding: 30px;
+            text-align: center;
+        }
 
-.logo{
-    max-width:180px;
-    margin-bottom:15px;
-}
+        .success-box {
+            max-width: 600px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,.10);
+        }
 
-.premio{
-    max-width:300px;
-    border-radius:10px;
-}
+        h1 {
+            color: #198754;
+        }
 
-h1{
-    color:#28a745;
-}
+        .tickets {
+            margin: 20px 0;
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
 
-.numero{
-    display:inline-block;
-    background:#ffc107;
-    padding:12px 18px;
-    margin:5px;
-    border-radius:8px;
-    font-weight:bold;
-}
+        .ticket {
+            background: #ffc107;
+            color: #000;
+            padding: 12px 18px;
+            border-radius: 8px;
+            font-weight: bold;
+        }
 
-.info{
-    text-align:left;
-    margin-top:20px;
-}
-</style>
+        .whatsapp {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 12px 20px;
+            background: #25D366;
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: bold;
+        }
 
+        .whatsapp:hover {
+            opacity: .9;
+        }
+    </style>
 </head>
 
 <body>
 
-<div class="ticket-box">
+<div class="success-box">
 
-<?php if (!empty($raffle->logo)): ?>
+    <h1>🎉 Reserva Confirmada</h1>
 
-<img class="logo"
-src="/uploads/<?= htmlspecialchars($raffle->logo) ?>">
+    <h2>
+        <?= htmlspecialchars($raffle->title) ?>
+    </h2>
 
-<?php endif; ?>
+    <p>
+        👤 Cliente:
+        <strong><?= htmlspecialchars($customer) ?></strong>
+    </p>
 
+    <p>
+        📱 WhatsApp:
+        <strong><?= htmlspecialchars($phone) ?></strong>
+    </p>
 
-<h1>🎉 Reserva Confirmada</h1>
+    <p>
+        📅 Fecha:
+        <strong><?= date('d/m/Y H:i') ?></strong>
+    </p>
 
+    <h3>🎟️ Tus boletos:</h3>
 
-<?php if (!empty($raffle->image)): ?>
+    <div class="tickets">
 
-<img class="premio"
-src="/uploads/<?= htmlspecialchars($raffle->image) ?>">
+        <?php foreach ($tickets as $ticket): ?>
 
-<?php endif; ?>
+            <div class="ticket">
+                <?= str_pad(
+                    $ticket->ticket_number,
+                    3,
+                    '0',
+                    STR_PAD_LEFT
+                ) ?>
+            </div>
 
-<h2>
-<?= htmlspecialchars($raffle->title) ?>
-</h2>
+        <?php endforeach; ?>
 
+    </div>
 
-<div class="info">
+    <p>
+        🟡 Estado:
+        <strong>Reservado</strong>
+    </p>
 
-<p>
-👤 Cliente:
-<strong><?= htmlspecialchars($customer) ?></strong>
-</p>
+    <p>
+        ¡Gracias por participar!
+    </p>
 
-<p>
-📱 WhatsApp:
-<strong><?= htmlspecialchars($phone) ?></strong>
-</p>
+    <?php
 
-<p>
-📅 Fecha:
-<strong><?= date('d/m/Y H:i') ?></strong>
-</p>
+    $ticketNumbers = implode(', ', array_map(
+        function ($ticket) {
+            return str_pad(
+                $ticket->ticket_number,
+                3,
+                '0',
+                STR_PAD_LEFT
+            );
+        },
+        $tickets
+    ));
 
-</div>
+    $whatsappMessage =
+        "Nueva reserva de rifa\n\n" .
+        "Premio: " . $raffle->title . "\n\n" .
+        "Cliente: " . $customer . "\n\n" .
+        "WhatsApp: " . $phone . "\n\n" .
+        "Boletos:\n" . $ticketNumbers . "\n\n" .
+        "Estado: Reservado\n\n" .
+        "Gracias por participar";
 
+    $whatsappUrl =
+        "https://wa.me/52" .
+        preg_replace('/\D/', '', $phone) .
+        "?text=" .
+        urlencode($whatsappMessage);
 
-<h3>🎟️ Tus boletos:</h3>
+    ?>
 
-
-<?php foreach($tickets as $ticket): ?>
-
-<span class="numero">
-<?= str_pad($ticket->ticket_number,3,'0',STR_PAD_LEFT) ?>
-</span>
-
-<?php endforeach; ?>
-
-
-<p>
-🟡 Estado:
-<strong>Reservado</strong>
-</p>
-
-
-<p>
-¡Gracias por participar! 
-</p>
-
-<a href="https://wa.me/52<?= preg_replace('/[^0-9]/','',$raffle->whatsapp) ?>?text=<?= urlencode(
-"Nueva reserva de rifa
-
-Premio: ".$raffle->title."
-
-Cliente: ".$customer."
-
-WhatsApp: ".$phone."
-
-Boletos:
-".implode(', ', array_map(function($ticket){
-    return str_pad($ticket->ticket_number,3,'0',STR_PAD_LEFT);
-}, $tickets))."
-
-Estado: Reservado
-
-Gracias por participar"
-) ?>"
-
-style="
-display:inline-block;
-margin-top:20px;
-padding:12px 20px;
-background:#25D366;
-color:white;
-text-decoration:none;
-border-radius:8px;
-font-weight:bold;
-">
-📲 Enviar comprobante por WhatsApp
-</a>
+    <a
+        href="<?= htmlspecialchars($whatsappUrl) ?>"
+        class="whatsapp"
+        target="_blank"
+        rel="noopener"
+    >
+        📲 Enviar comprobante por WhatsApp
+    </a>
 
 </div>
 
 </body>
 </html>
+PHP

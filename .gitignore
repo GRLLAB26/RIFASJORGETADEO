@@ -7,3 +7,9 @@
 *.before_transaction
 
 .vscode/settings.json
+
+# Backups y archivos temporales de desarrollo
+*.bak
+*.bak-*
+*.before_*
+*.broken-*
