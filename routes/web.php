@@ -6,11 +6,14 @@ use App\Controllers\AdminController;
 use App\Controllers\PaymentController;
 use App\Controllers\WinnerController;
 use App\Controllers\ReservationController;
+use App\Controllers\DashboardController;
 
 
 return [
 
 'GET' => [
+
+    '/dashboard' => [DashboardController::class, 'index'],
 
     '/raffles/create' => [RaffleController::class, 'create'],
     '/raffles/show'   => [RaffleController::class, 'show'],

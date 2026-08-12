@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Controllers;
 
 use App\Core\Database;
@@ -7,45 +9,42 @@ use PDO;
 
 class AdminController
 {
+    public function index(): void
+    {
+        $db = Database::connect();
 
-public function index()
-{
-    $db = Database::connect();
+        $kpis = [
+            'active_raffles' => (int) $db->query("
+                SELECT COUNT(*)
+                FROM raffles
+                WHERE status = 'active'
+            ")->fetchColumn(),
 
-    $kpis = [
+            'sold_tickets' => (int) $db->query("
+                SELECT COUNT(*)
+                FROM raffle_tickets
+                WHERE payment_status IN ('paid', 'winner')
+            ")->fetchColumn(),
 
-        'active_raffles' => (int)$db->query("
-            SELECT COUNT(*)
-            FROM raffles
-            WHERE status = 'active'
-        ")->fetchColumn(),
+            'reserved_tickets' => (int) $db->query("
+                SELECT COUNT(*)
+                FROM raffle_tickets
+                WHERE payment_status = 'reserved'
+            ")->fetchColumn(),
 
-        'sold_tickets' => (int)$db->query("
-            SELECT COUNT(*)
-            FROM raffle_tickets
-            WHERE payment_status IN ('paid','winner')
-        ")->fetchColumn(),
+            'revenue' => (float) $db->query("
+                SELECT COALESCE(SUM(amount), 0)
+                FROM raffle_payments
+                WHERE status = 'approved'
+            ")->fetchColumn(),
+        ];
 
-        'reserved_tickets' => (int)$db->query("
-            SELECT COUNT(*)
-            FROM raffle_tickets
-            WHERE payment_status = 'reserved'
-        ")->fetchColumn(),
+        view('Admin/Index', [
+            'kpis' => $kpis
+        ]);
+    }
 
-        'revenue' => (float)$db->query("
-            SELECT COALESCE(SUM(amount),0)
-            FROM raffle_payments
-            WHERE status = 'approved'
-        ")->fetchColumn(),
-
-    ];
-
-    view('Admin/Index', [
-        'kpis' => $kpis
-    ]);
-}
-
-    public function customers()
+    public function customers(): void
     {
         $db = Database::connect();
 

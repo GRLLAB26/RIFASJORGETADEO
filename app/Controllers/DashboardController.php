@@ -1,21 +1,21 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Controllers;
 
 use App\Models\Raffle;
 
 class DashboardController
 {
-    public function index()
+    public function index(): void
     {
         $raffles = Raffle::all();
-
-        $totalRaffles = count($raffles);
 
         view('Dashboard/Index', [
             'title' => 'Dashboard',
             'raffles' => $raffles,
-            'totalRaffles' => $totalRaffles,
+            'totalRaffles' => count($raffles),
         ]);
     }
 }

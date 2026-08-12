@@ -45,9 +45,17 @@
         <br>
 
         <?php if(!empty($ticket->phone)): ?>
-            <a href="https://wa.me/52<?= $ticket->phone ?>" target="_blank">
-                📱 WhatsApp
-            </a>
+
+<?php
+$phone = preg_replace('/\D+/', '', $ticket->phone ?? '');
+?>
+
+<?php if ($phone): ?>
+    <a href="https://wa.me/52<?= $phone ?>" target="_blank">
+        📱 WhatsApp
+    </a>
+<?php endif; ?>
+
         <?php endif; ?>
     </td>
 
