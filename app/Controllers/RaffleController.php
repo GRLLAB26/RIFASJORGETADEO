@@ -4,6 +4,9 @@ namespace App\Controllers;
 
 use App\Models\Raffle;
 use App\Models\RaffleTicket;
+use App\Core\Database;
+use PDO;
+
 
 class RaffleController
 {
@@ -12,8 +15,8 @@ class RaffleController
         $raffles = Raffle::all();
 
         view('Raffles/Index', [
-            'raffles' => $raffles
-        ]);
+    'raffles' => $raffles
+]);
     }
 
     public function create()
@@ -21,127 +24,123 @@ class RaffleController
         view('Raffles/Create');
     }
 
-    public function store()
-    {
-        $raffleId = Raffle::create([
-            'title'         => $_POST['title'] ?? '',
-            'description'   => $_POST['description'] ?? '',
-            'ticket_price'  => $_POST['ticket_price'] ?? 0,
-            'total_numbers' => $_POST['total_numbers'] ?? 0,
-            'draw_date'     => $_POST['draw_date'] ?? null,
-            'whatsapp'      => $_POST['whatsapp'] ?? '',
-            'clabe'         => $_POST['clabe'] ?? '',
-            'status'        => 'active'
+   public function store()
+{
+    $raffleId = Raffle::create([
+    'title'         => $_POST['title'],
+    'description'   => $_POST['description'],
+    'ticket_price'  => $_POST['ticket_price'],
+    'total_numbers' => $_POST['total_numbers'],
+    'draw_date'     => $_POST['draw_date'],
+    'whatsapp'      => $_POST['whatsapp'],
+    'clabe'         => $_POST['clabe'],
+    'status'        => 'active'
+]);
+
+    for ($i = 0; $i < (int) $_POST['total_numbers']; $i++) {
+
+        RaffleTicket::create([
+            'raffle_id' => $raffleId,
+            'ticket_number' => $i + 1,
+            'customer_name' => null,
+            'phone' => null,
+            'payment_status' => 'available',
+            'payment_reference' => null,
         ]);
 
-        for ($i = 0; $i < (int) ($_POST['total_numbers'] ?? 0); $i++) {
-            RaffleTicket::create([
-                'raffle_id'         => $raffleId,
-                'ticket_number'     => $i + 1,
-                'customer_name'     => null,
-                'phone'             => null,
-                'payment_status'    => 'available',
-                'payment_reference' => null
-            ]);
-        }
+    }
+    header('Location: /dashboard');
 
-        header('Location: /dashboard');
-        exit;
+    exit;
+   }
+   public function show()
+{
+    $id = (int) ($_GET['id'] ?? 0);
+
+    if ($id <= 0) {
+        exit('Rifa no encontrada.');
     }
 
-    public function show()
-    {
-        $id = (int) ($_GET['id'] ?? 0);
+    $raffle = Raffle::find($id);
 
-        if ($id <= 0) {
-            exit('Rifa no encontrada.');
-        }
-
-        $raffle = Raffle::find($id);
-
-        if (!$raffle) {
-            exit('La rifa no existe.');
-        }
-
-        $tickets = RaffleTicket::byRaffle($id);
-
-        view('Raffles/Show', [
-            'raffle' => $raffle,
-            'tickets' => $tickets
-        ]);
+    if (!$raffle) {
+        exit('La rifa no existe.');
     }
 
-    public function editTicket()
-    {
-        $id = (int) ($_GET['id'] ?? 0);
+    $tickets = RaffleTicket::byRaffle($id);
 
-        if ($id <= 0) {
-            exit('Boleto no encontrado.');
-        }
+   view('Raffles/Show', [
+    'raffle' => $raffle,
+    'tickets' => $tickets,
+]);
+}
+public function editTicket()
+{
+    $id = (int) ($_GET['id'] ?? 0);
 
-        $ticket = RaffleTicket::findTicket($id);
-
-        if (!$ticket) {
-            exit('El boleto no existe.');
-        }
-
-        view('Raffles/EditTicket', [
-            'ticket' => $ticket
-        ]);
+    if ($id <= 0) {
+        exit('Boleto no encontrado.');
     }
 
-    public function updateTicket()
-    {
-        $id = (int) ($_POST['id'] ?? 0);
+    $ticket = RaffleTicket::findTicket($id);
 
-        if ($id <= 0) {
-            exit('Boleto no válido.');
-        }
-
-        $ticket = RaffleTicket::findTicket($id);
-
-        if (!$ticket) {
-            exit('El boleto no existe.');
-        }
-
-        RaffleTicket::updateTicket($id, [
-            'customer_name'     => $_POST['customer_name'] ?? '',
-            'phone'             => $_POST['phone'] ?? '',
-            'payment_reference' => $_POST['payment_reference'] ?? '',
-            'payment_status'    => $_POST['payment_status'] ?? 'available',
-            'reserved_at'       => date('Y-m-d H:i:s')
-        ]);
-
-        header('Location: /raffles/show?id=' . $ticket->raffle_id);
-        exit;
+    if (!$ticket) {
+        exit('El boleto no existe.');
     }
 
-    public function participate()
-    {
-        $id = (int) ($_GET['id'] ?? 0);
+    view('Raffles/EditTicket', [
+        'ticket' => $ticket,
+    ]);
+}
 
-        if ($id <= 0) {
-            exit('Rifa no encontrada.');
-        }
+public function updateTicket()
+{
+    $id = (int) ($_POST['id'] ?? 0);
 
-        $raffle = Raffle::find($id);
-
-        if (!$raffle) {
-            exit('La rifa no existe.');
-        }
-
-        $tickets = RaffleTicket::byRaffle($id);
-
-        view('Raffles/Participate', [
-            'raffle' => $raffle,
-            'tickets' => $tickets
-        ]);
+    if ($id <= 0) {
+        exit('Boleto no válido.');
     }
 
-    public function reserve()
+RaffleTicket::updateTicket($id, [
+    'customer_name'      => $_POST['customer_name'] ?? '',
+    'phone'              => $_POST['phone'] ?? '',
+    'payment_reference'  => $_POST['payment_reference'] ?? '',
+    'payment_status'     => $_POST['payment_status'] ?? 'available',
+    'reserved_at'        => date('Y-m-d H:i:s')
+]);
+
+    header('Location: /raffles/show?id=' . $ticket->raffle_id);
+    exit;
+}
+public function participate()
+{
+    $id = (int)($_GET['id'] ?? 0);
+
+    if ($id <= 0) {
+        exit('Rifa no encontrada');
+    }
+
+    $raffle = Raffle::find($id);
+
+    if (!$raffle) {
+        exit('La rifa no existe');
+    }
+
+    $tickets = RaffleTicket::byRaffle($id);
+
+view('Raffles/Participate', [
+    'raffle' => $raffle,
+    'tickets' => $tickets
+]);
+
+}
+
+public function reserve()
 {
     $tickets = $_POST['tickets'] ?? [];
 
+    $customer = trim($_POST['customer_name'] ?? '');
+    $phone = trim($_POST['phone'] ?? '');
     $customer = trim($_POST['customer_name'] ?? '');
     $phone = trim($_POST['phone'] ?? '');
 
@@ -150,90 +149,121 @@ class RaffleController
     }
 
     if ($customer === '') {
-        exit('Debes ingresar tu nombre.');
+        exit('El nombre del cliente es obligatorio.');
     }
 
     if ($phone === '') {
-        exit('Debes ingresar tu WhatsApp.');
+        exit('El WhatsApp es obligatorio.');
     }
 
-    $db = \App\Core\Database::connect();
+    // Limpiar y validar IDs
+    $tickets = array_values(array_unique(array_map('intval', $tickets)));
+
+    if (in_array(0, $tickets, true)) {
+        exit('Hay un boleto inválido.');
+    }
+
+    $db = Database::connect();
 
     try {
 
         $db->beginTransaction();
 
         /*
-         * Verificar que todos los boletos existan
-         * y estén disponibles.
+         * 1. Bloquear y comprobar TODOS los boletos.
+         *    FOR UPDATE evita que dos clientes reserven
+         *    simultáneamente el mismo boleto.
          */
-        $ticketIds = array_map('intval', $tickets);
-        $ticketIds = array_values(array_unique($ticketIds));
-
-        if (empty($ticketIds)) {
-            throw new \Exception('No seleccionaste boletos válidos.');
-        }
-
-        $placeholders = implode(',', array_fill(0, count($ticketIds), '?'));
+        $placeholders = implode(',', array_fill(0, count($tickets), '?'));
 
         $stmt = $db->prepare("
             SELECT
-                rt.id,
-                rt.raffle_id,
-                rt.ticket_number,
-                rt.payment_status,
-                r.ticket_price
-            FROM raffle_tickets rt
-            INNER JOIN raffles r
-                ON rt.raffle_id = r.id
-            WHERE rt.id IN ($placeholders)
+                id,
+                raffle_id,
+                ticket_number,
+                customer_name,
+                phone,
+                payment_status
+            FROM raffle_tickets
+            WHERE id IN ($placeholders)
+            ORDER BY ticket_number
             FOR UPDATE
         ");
 
-        $stmt->execute($ticketIds);
+        $stmt->execute($tickets);
 
-        $selectedTickets = $stmt->fetchAll(\PDO::FETCH_OBJ);
+        $ticketRows = $stmt->fetchAll(PDO::FETCH_OBJ);
 
-        if (count($selectedTickets) !== count($ticketIds)) {
-            throw new \Exception('Uno o más boletos no existen.');
+        if (count($ticketRows) !== count($tickets)) {
+            throw new \Exception(
+                'Uno o más boletos no existen.'
+            );
         }
 
         /*
-         * Todos los boletos deben estar disponibles
-         * y pertenecer a la misma rifa.
+         * 2. Todos los boletos deben pertenecer a la misma rifa.
          */
-        $raffleId = null;
-        $amount = 0;
+        $raffleId = (int)$ticketRows[0]->raffle_id;
 
-        foreach ($selectedTickets as $ticket) {
+        foreach ($ticketRows as $ticket) {
+
+            if ((int)$ticket->raffle_id !== $raffleId) {
+                throw new \Exception(
+                    'Los boletos seleccionados pertenecen a rifas diferentes.'
+                );
+            }
 
             if ($ticket->payment_status !== 'available') {
                 throw new \Exception(
-                    'El boleto ' . $ticket->ticket_number . ' ya no está disponible.'
+                    'El boleto ' .
+                    str_pad(
+                        $ticket->ticket_number,
+                        3,
+                        '0',
+                        STR_PAD_LEFT
+                    ) .
+                    ' ya no está disponible.'
                 );
             }
-
-            if ($raffleId === null) {
-                $raffleId = (int) $ticket->raffle_id;
-            }
-
-            if ((int) $ticket->raffle_id !== $raffleId) {
-                throw new \Exception(
-                    'Los boletos seleccionados deben pertenecer a la misma rifa.'
-                );
-            }
-
-            $amount += (float) $ticket->ticket_price;
         }
 
         /*
-         * Crear la reserva principal.
+         * 3. Obtener la información de la rifa.
+         */
+        $stmt = $db->prepare("
+            SELECT id, title, ticket_price
+            FROM raffles
+            WHERE id = ?
+            LIMIT 1
+        ");
+
+        $stmt->execute([$raffleId]);
+
+        $raffle = $stmt->fetch(PDO::FETCH_OBJ);
+
+        if (!$raffle) {
+            throw new \Exception('La rifa no existe.');
+        }
+
+        /*
+         * 4. Calcular el total.
+         */
+        $ticketPrice = (float)$raffle->ticket_price;
+        $amount = count($ticketRows) * $ticketPrice;
+
+        /*
+         * 5. Crear UNA reserva para todos los boletos.
          */
         $stmt = $db->prepare("
             INSERT INTO raffle_reservations
-                (raffle_id, customer_name, phone, amount, status)
-            VALUES
-                (?, ?, ?, ?, 'pending')
+            (
+                raffle_id,
+                customer_name,
+                phone,
+                amount,
+                status
+            )
+            VALUES (?, ?, ?, ?, 'pending')
         ");
 
         $stmt->execute([
@@ -243,93 +273,141 @@ class RaffleController
             $amount
         ]);
 
-        $reservationId = (int) $db->lastInsertId();
+        $reservationId = (int)$db->lastInsertId();
 
         if ($reservationId <= 0) {
-            throw new \Exception('No se pudo crear la reserva.');
+            throw new \Exception(
+                'No se pudo crear la reserva.'
+            );
         }
 
         /*
-         * Relacionar cada boleto con la reserva
-         * y marcarlo como reservado.
+         * 6. Relacionar TODOS los boletos con la reserva.
          */
-        foreach ($selectedTickets as $ticket) {
+        $stmtReservationTicket = $db->prepare("
+            INSERT INTO raffle_reservation_tickets
+            (
+                reservation_id,
+                raffle_ticket_id
+            )
+            VALUES (?, ?)
+        ");
 
-            $stmt = $db->prepare("
-                UPDATE raffle_tickets
-                SET
-                    customer_name = ?,
-                    phone = ?,
-                    payment_status = 'reserved',
-                    reserved_at = NOW()
-                WHERE id = ?
-                AND payment_status = 'available'
-            ");
+        /*
+         * 7. Reservar todos los boletos.
+         */
+        $stmtUpdateTicket = $db->prepare("
+            UPDATE raffle_tickets
+            SET
+                customer_name = ?,
+                phone = ?,
+                payment_status = 'reserved',
+                reserved_at = NOW()
+            WHERE id = ?
+            AND payment_status = 'available'
+        ");
 
-            $stmt->execute([
+        foreach ($ticketRows as $ticket) {
+
+            $stmtUpdateTicket->execute([
                 $customer,
                 $phone,
                 $ticket->id
             ]);
 
-            if ($stmt->rowCount() !== 1) {
+            if ($stmtUpdateTicket->rowCount() !== 1) {
                 throw new \Exception(
-                    'No se pudo reservar el boleto ' . $ticket->ticket_number . '.'
+                    'El boleto ' .
+                    str_pad(
+                        $ticket->ticket_number,
+                        3,
+                        '0',
+                        STR_PAD_LEFT
+                    ) .
+                    ' ya no está disponible.'
                 );
             }
 
-            $stmt = $db->prepare("
-                INSERT INTO raffle_reservation_tickets
-                    (reservation_id, raffle_ticket_id)
-                VALUES
-                    (?, ?)
-            ");
-
-            $stmt->execute([
+            $stmtReservationTicket->execute([
                 $reservationId,
                 $ticket->id
             ]);
         }
 
+        /*
+         * 8. Crear UN solo pago pendiente para toda la reserva.
+         *
+         * Si ya existe un pago para esta reserva,
+         * no crear otro.
+         */
+        $stmt = $db->prepare("
+            SELECT id
+            FROM raffle_payments
+            WHERE reservation_id = ?
+            LIMIT 1
+            FOR UPDATE
+        ");
+
+        $stmt->execute([
+            $reservationId
+        ]);
+
+        $existingPayment = $stmt->fetch(PDO::FETCH_OBJ);
+
+        if (!$existingPayment) {
+
+            /*
+             * raffle_ticket_id sigue siendo obligatorio actualmente,
+             * así que usamos el primer boleto como referencia.
+             */
+            $firstTicketId = (int)$ticketRows[0]->id;
+
+            $stmt = $db->prepare("
+                INSERT INTO raffle_payments
+                (
+                    raffle_ticket_id,
+                    reservation_id,
+                    amount,
+                    payment_method,
+                    reference,
+                    status
+                )
+                VALUES (?, ?, ?, NULL, NULL, 'pending')
+            ");
+
+            $stmt->execute([
+                $firstTicketId,
+                $reservationId,
+                $amount
+            ]);
+        }
+
+        /*
+         * 9. Confirmar TODO.
+         */
         $db->commit();
 
         /*
-         * Recuperar boletos reservados para mostrar
-         * la pantalla de confirmación.
+         * Obtener los boletos nuevamente para la vista.
          */
         $reservedTickets = [];
 
-        foreach ($ticketIds as $ticketId) {
-
-            $stmt = $db->prepare("
-                SELECT *
-                FROM raffle_tickets
-                WHERE id = ?
-                LIMIT 1
-            ");
-
-            $stmt->execute([$ticketId]);
-
-            $ticket = $stmt->fetch(\PDO::FETCH_OBJ);
-
-            if ($ticket) {
-                $reservedTickets[] = $ticket;
-            }
+        foreach ($ticketRows as $ticket) {
+            $reservedTickets[] = RaffleTicket::findTicket(
+                (int)$ticket->id
+            );
         }
 
-        $raffle = Raffle::find($raffleId);
-
-        if (!$raffle) {
-            exit('No se encontró la rifa.');
-        }
-
+        /*
+         * Mostrar comprobante de reserva.
+         */
         view('Raffles/ReservationSuccess', [
-            'customer'      => $customer,
-            'phone'         => $phone,
-            'tickets'       => $reservedTickets,
-            'raffle'        => $raffle,
+            'customer' => $customer,
+            'phone' => $phone,
+            'tickets' => $reservedTickets,
+            'raffle' => $raffle,
             'reservationId' => $reservationId,
-            'amount'        => $amount
+            'amount' => $amount
         ]);
 
     } catch (\Exception $e) {
@@ -338,7 +416,10 @@ class RaffleController
             $db->rollBack();
         }
 
-        exit($e->getMessage());
+        exit(
+            'No se pudo realizar la reserva: ' .
+            htmlspecialchars($e->getMessage())
+        );
     }
 }
 

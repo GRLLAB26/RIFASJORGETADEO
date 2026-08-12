@@ -1,44 +1,48 @@
-<div class="container mt-4">
+<h1>💰 Pagos</h1>
 
-    <h1>💰 Pagos</h1>
+<table class="table table-bordered table-striped align-middle">
 
-    <table class="table table-bordered table-striped align-middle">
+    <thead>
+        <tr>
+            <th>Rifa</th>
+	    <th>Boletos</th>
+            <th>Cliente</th>
+            <th>Teléfono</th>
+            <th>Monto</th>
+            <th>Método</th>
+            <th>Referencia</th>
+            <th>Estado</th>
+            <th>Fecha</th>
+            <th>Acciones</th>
+<th>Boletos</th>
+        </tr>
+    </thead>
 
-        <thead>
-            <tr>
-                <th>Rifa</th>
-                <th>Boleto</th>
-                <th>Cliente</th>
-                <th>Teléfono</th>
-                <th>Monto</th>
-                <th>Método</th>
-                <th>Referencia</th>
-                <th>Estado</th>
-                <th>Fecha</th>
-                <th>Acciones</th>
-                <th>Estado Boleto</th>
-            </tr>
-        </thead>
+    <tbody>
 
-        <tbody>
+    <?php if (empty($payments)): ?>
+
+        <tr>
+            <td colspan="11" class="text-center">
+                No hay pagos registrados.
+            </td>
+        </tr>
+
+    <?php else: ?>
 
         <?php foreach ($payments as $p): ?>
 
             <tr>
 
                 <td>
+
                     <?= htmlspecialchars($p->title ?? '') ?>
-                </td>
 
-                <td>
-                    <?= str_pad(
-                        (string)($p->ticket_number ?? ''),
-                        3,
-                        '0',
-                        STR_PAD_LEFT
-                    ) ?>
-                </td>
+           </td>
 
+<td>
+    <?= htmlspecialchars($p->tickets ?? '') ?>
+</td>
                 <td>
                     <?= htmlspecialchars($p->customer_name ?? '') ?>
                 </td>
@@ -48,7 +52,7 @@
                 </td>
 
                 <td>
-                    $<?= number_format((float)$p->amount, 2) ?>
+                    $<?= number_format((float)($p->amount ?? 0), 2) ?>
                 </td>
 
                 <td>
@@ -94,9 +98,11 @@
 
                     <?php if ($p->status === 'pending'): ?>
 
-                        <form method="POST"
-                              action="/payments/approve"
-                              style="display:inline;">
+                        <form
+                            method="POST"
+                            action="/payments/approve"
+                            style="display:inline;"
+                        >
 
                             <input
                                 type="hidden"
@@ -107,15 +113,18 @@
                             <button
                                 type="submit"
                                 class="btn btn-success btn-sm"
+                                onclick="return confirm('¿Aprobar este pago?')"
                             >
                                 ✅ Aprobar
                             </button>
 
                         </form>
 
-                        <form method="POST"
-                              action="/payments/reject"
-                              style="display:inline;">
+                        <form
+                            method="POST"
+                            action="/payments/reject"
+                            style="display:inline;"
+                        >
 
                             <input
                                 type="hidden"
@@ -126,6 +135,7 @@
                             <button
                                 type="submit"
                                 class="btn btn-danger btn-sm"
+                                onclick="return confirm('¿Rechazar este pago?')"
                             >
                                 ❌ Rechazar
                             </button>
@@ -177,8 +187,8 @@
 
         <?php endforeach; ?>
 
-        </tbody>
+    <?php endif; ?>
 
-    </table>
+    </tbody>
 
-</div>
+</table>
