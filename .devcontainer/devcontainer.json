@@ -2,7 +2,7 @@
   "name": "Rifas Jorge Tadeo",
   "image": "mcr.microsoft.com/devcontainers/base:alpine-3.22",
   "features": {
-    "ghcr.io/devcontainer-config/features/dot-config:4": {}
+    "ghcr.io/devcontainer-config/features/dot-config:5": {}
   },
   "customizations": {
     "vscode": {
